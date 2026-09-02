@@ -195,6 +195,13 @@ function Editor() {
     setQrOpen(true)
   }
 
+  const goToSheet = () => {
+    setQrOpen(false)
+    const el = document.querySelector('.sheet')
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    areaRef.current?.focus()
+  }
+
   useEffect(() => {
     if (!qrOpen) return
     const handler = (e) => {
@@ -508,27 +515,41 @@ function Editor() {
       {qrOpen && (
         <div className="overlay">
           <div className="modal">
-            <h3>Cronômetro no celular</h3>
-            <p className="modal-desc">
-              Aponte a câmera do celular para o QR Code (ou abra o link). O celular vira o
-              cronômetro sincronizado com este site.
-            </p>
-            <div className="qr-box">
-              {qrDataUrl ? (
-                <img src={qrDataUrl} alt="QR Code para abrir o cronômetro no celular" />
-              ) : (
-                <div className="qr-loading">Gerando QR Code...</div>
-              )}
-            </div>
-            <a className="qr-link" href={qrUrl} target="_blank" rel="noreferrer">
-              {qrUrl}
-            </a>
-            <div className={`qr-status ${phoneConnected ? 'on' : ''}`}>
-              {phoneConnected
-                ? 'Celular conectado! O cronômetro está sincronizado.'
-                : 'Aguardando conexão do celular...'}
-            </div>
-            <button className="icon-btn" onClick={() => setQrOpen(false)}>Fechar</button>
+            {phoneConnected ? (
+              <>
+                <div className="qr-success" aria-hidden="true" />
+                <h3>Cronômetro no celular</h3>
+                <div className="qr-status on">
+                  Celular conectado! O cronômetro está sincronizado.
+                </div>
+                <button className="btn btn-primary btn-big" onClick={goToSheet}>
+                  Ir para a tela da redação
+                </button>
+                <button className="link-btn" onClick={() => setQrOpen(false)}>Fechar</button>
+              </>
+            ) : (
+              <>
+                <h3>Cronômetro no celular</h3>
+                <p className="modal-desc">
+                  Aponte a câmera do celular para o QR Code (ou abra o link). O celular vira o
+                  cronômetro sincronizado com este site.
+                </p>
+                <div className="qr-box">
+                  {qrDataUrl ? (
+                    <img src={qrDataUrl} alt="QR Code para abrir o cronômetro no celular" />
+                  ) : (
+                    <div className="qr-loading">Gerando QR Code...</div>
+                  )}
+                </div>
+                <a className="qr-link" href={qrUrl} target="_blank" rel="noreferrer">
+                  {qrUrl}
+                </a>
+                <div className="qr-status">
+                  Aguardando conexão do celular...
+                </div>
+                <button className="icon-btn" onClick={() => setQrOpen(false)}>Fechar</button>
+              </>
+            )}
           </div>
         </div>
       )}
