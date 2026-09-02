@@ -494,10 +494,6 @@ function Editor() {
               aria-label="Texto da redação"
             />
           </div>
-
-          <div className="sheet-note">
-            <br />
-          </div>
         </div>
       </main>
 
