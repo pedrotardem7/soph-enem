@@ -57,6 +57,7 @@ function Editor() {
   const [visualLines, setVisualLines] = useState(0)
   const [copied, setCopied] = useState(false)
   const areaRef = useRef(null)
+  const measureRef = useRef(null)
 
   const [timerMode, setTimerMode] = useState('off')
   const [timerRunning, setTimerRunning] = useState(false)
@@ -107,10 +108,10 @@ function Editor() {
   }, [essay])
 
   useEffect(() => {
-    const el = areaRef.current
+    const el = measureRef.current
     if (!el) return
     const lh = parseFloat(getComputedStyle(el).lineHeight)
-    setVisualLines(lh ? Math.round(el.scrollHeight / lh) : 0)
+    setVisualLines(lh ? Math.max(1, Math.round(el.scrollHeight / lh)) : 1)
   }, [essay, cursive, fs])
 
   useEffect(() => {
@@ -484,6 +485,13 @@ function Editor() {
               ))}
             </div>
             {essay === '' && <span className="caret" aria-hidden="true" />}
+            <div
+              ref={measureRef}
+              className={`line-measure ${cursive ? 'cursive' : ''}`}
+              aria-hidden="true"
+            >
+              {essay}
+            </div>
             <textarea
               ref={areaRef}
               className={`typing ${cursive ? 'cursive' : ''}`}

@@ -683,6 +683,27 @@
   pointer-events: none;
 }
 
+.line-measure {
+  position: absolute;
+  top: 0;
+  left: var(--num-w);
+  right: 4px;
+  visibility: hidden;
+  pointer-events: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: var(--user-fs);
+  line-height: var(--line-h);
+  color: transparent;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.line-measure.cursive {
+  font-family: 'Caveat', cursive;
+  font-size: var(--user-fs-cursive);
+}
+
 .line {
   display: flex;
   height: var(--line-h);
@@ -788,62 +809,29 @@
   }
 
   .sheet {
-    --line-h: 0.85cm;
-    --num-w: 1.15cm;
-    --pad-x: 0.4cm;
-    --total-h: 25.5cm;
-    width: 20.8cm;
-    height: 29.7cm;
+    --line-h: 28px;
+    --num-w: 56px;
+    --pad-x: 36px;
+    --total-h: 840px;
+    width: 720px;
     margin: 0 auto;
     border-radius: 0;
     box-shadow: none;
-    padding: 0.5cm var(--pad-x) 0.45cm;
-    overflow: hidden;
+    padding: 18px var(--pad-x) 16px;
+    overflow: visible;
     page-break-inside: avoid;
-  }
-
-  .sheet-header {
-    margin-bottom: 0.25cm;
-  }
-
-  .h-top {
-    font-size: 9px;
-    line-height: 1.3;
-  }
-
-  .h-title {
-    font-size: 18px;
-    line-height: 1.2;
-  }
-
-  .h-sub {
-    font-size: 9px;
-    line-height: 1.2;
-    margin-top: 1px;
-  }
-
-  .writing-area {
-    border-width: 1.6px;
-  }
-
-  .line-num {
-    font-size: 8.5px;
-  }
-
-  .num-label {
-    font-size: 7px;
   }
 
   .typing {
     overflow: hidden;
-    right: 0;
   }
 
   .typing::placeholder {
     color: transparent;
   }
 
-  .caret {
+  .caret,
+  .line-measure {
     display: none;
   }
 
