@@ -94,7 +94,7 @@ function RemoteTimer({ peerId }) {
         <p className="remote-label">{label}</p>
         <div className={`remote-time ${cls}`}>{formatTime(value)}</div>
 
-        {state && state.mode !== 'off' && (
+        {state && (
           <div className="remote-actions">
             <button className="btn btn-primary" onClick={() => send('toggle')}>
               {state.running ? 'Pausar' : 'Iniciar'}

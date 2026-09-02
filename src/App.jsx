@@ -282,7 +282,29 @@ function Editor() {
     setTimerValue(timerMode === 'down' ? preset : 0)
   }
 
-  cmdRef.current = { toggle: startPause, reset: resetTimer }
+  const remoteToggle = () => {
+    if (timerMode === 'off') {
+      setTimerMode('up')
+      setTimerValue(0)
+      startRef.current = Date.now()
+      setTimedOut(false)
+      setTimerRunning(true)
+    } else {
+      startPause()
+    }
+  }
+
+  const remoteReset = () => {
+    if (timerMode === 'off') {
+      setTimerMode('up')
+      setTimerValue(0)
+      setTimerRunning(false)
+    } else {
+      resetTimer()
+    }
+  }
+
+  cmdRef.current = { toggle: remoteToggle, reset: remoteReset }
 
   return (
     <div className="app">
