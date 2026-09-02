@@ -533,6 +533,23 @@
   margin-top: 1rem;
 }
 
+.footer {
+  text-align: center;
+  padding: 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+.footer a {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.footer a:hover {
+  color: var(--primary-2);
+}
+
 .controls {
   display: flex;
   align-items: center;
@@ -840,7 +857,8 @@
   .warning,
   .overlay,
   .remote,
-  .timer-wrap {
+  .timer-wrap,
+  .footer {
     display: none !important;
   }
 

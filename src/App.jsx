@@ -512,6 +512,13 @@ function Editor() {
         </div>
       </main>
 
+      <footer className="footer">
+        Feito por{' '}
+        <a href="https://www.instagram.com/pedrotardem" target="_blank" rel="noreferrer">
+          @pedrotardem
+        </a>
+      </footer>
+
       {qrOpen && (
         <div className="overlay">
           <div className="modal">
