@@ -77,6 +77,7 @@ function Editor() {
   const peerRef = useRef(null)
   const connRef = useRef(null)
   const sendStateRef = useRef(() => {})
+  const cmdRef = useRef({ toggle: () => {}, reset: () => {} })
 
   useEffect(() => {
     if (!timerOpen) return
@@ -169,8 +170,8 @@ function Editor() {
       })
       c.on('data', (d) => {
         if (!d || d.t !== 'cmd') return
-        if (d.a === 'toggle') startPause()
-        if (d.a === 'reset') resetTimer()
+        if (d.a === 'toggle') cmdRef.current.toggle()
+        if (d.a === 'reset') cmdRef.current.reset()
       })
       c.on('close', () => {
         connRef.current = null
@@ -280,6 +281,8 @@ function Editor() {
     setTimedOut(false)
     setTimerValue(timerMode === 'down' ? preset : 0)
   }
+
+  cmdRef.current = { toggle: startPause, reset: resetTimer }
 
   return (
     <div className="app">
