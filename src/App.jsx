@@ -496,8 +496,7 @@ function Editor() {
           </div>
 
           <div className="sheet-note">
-            Escreva dentro das linhas e das margens. O texto deve respeitar os direitos humanos;
-            o desrespeito a esses direitos implica nota zero. Não assine nem se identifique na folha.
+            <br />
           </div>
         </div>
       </main>
