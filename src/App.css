@@ -839,6 +839,14 @@
     right: 0;
   }
 
+  .typing::placeholder {
+    color: transparent;
+  }
+
+  .caret {
+    display: none;
+  }
+
   @page {
     size: A4;
     margin: 0;
