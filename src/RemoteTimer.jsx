@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Peer } from 'peerjs'
 
+const PRESETS = [30, 60, 80, 120]
+
 function formatTime(secs) {
   const h = Math.floor(secs / 3600)
   const m = Math.floor((secs % 3600) / 60)
@@ -50,15 +52,20 @@ function RemoteTimer({ peerId }) {
     return () => clearInterval(id)
   }, [])
 
-  const send = (action) => {
+  const sendCmd = (obj) => {
     const c = connRef.current
-    if (c && c.open) c.send({ t: 'cmd', a: action })
+    if (c && c.open) c.send(obj)
   }
 
   let value = 0
   if (state) {
-    if (state.mode === 'down') value = Math.max(0, Math.ceil((state.down.endAt - now) / 1000))
-    else if (state.mode === 'up') value = Math.max(0, Math.floor((now - state.up.startAt) / 1000))
+    if (state.running && state.mode === 'down') {
+      value = Math.max(0, Math.ceil((state.down.endAt - now) / 1000))
+    } else if (state.running && state.mode === 'up') {
+      value = Math.max(0, Math.floor((now - state.up.startAt) / 1000))
+    } else {
+      value = state.value ?? 0
+    }
   }
 
   const label =
@@ -91,15 +98,52 @@ function RemoteTimer({ peerId }) {
       </header>
 
       <main className="remote-main">
+        <div className="segmented timer-modes remote-modes">
+          <button
+            className={state?.mode === 'off' ? 'active' : ''}
+            onClick={() => sendCmd({ t: 'cmd', a: 'mode', mode: 'off' })}
+          >
+            Desligado
+          </button>
+          <button
+            className={state?.mode === 'up' ? 'active' : ''}
+            onClick={() => sendCmd({ t: 'cmd', a: 'mode', mode: 'up' })}
+          >
+            Cronômetro
+          </button>
+          <button
+            className={state?.mode === 'down' ? 'active' : ''}
+            onClick={() => sendCmd({ t: 'cmd', a: 'mode', mode: 'down' })}
+          >
+            Temporizador
+          </button>
+        </div>
+
         <p className="remote-label">{label}</p>
         <div className={`remote-time ${cls}`}>{formatTime(value)}</div>
 
+        {state?.mode === 'down' && (
+          <div className="timer-presets remote-presets">
+            {PRESETS.map((p) => (
+              <button
+                key={p}
+                className={`chip ${state?.preset === p * 60 ? 'active' : ''}`}
+                onClick={() => sendCmd({ t: 'cmd', a: 'preset', seconds: p * 60 })}
+              >
+                {p} min
+              </button>
+            ))}
+          </div>
+        )}
+
         {state && (
           <div className="remote-actions">
-            <button className="btn btn-primary" onClick={() => send('toggle')}>
+            <button className="btn btn-primary" onClick={() => sendCmd({ t: 'cmd', a: 'toggle' })}>
               {state.running ? 'Pausar' : 'Iniciar'}
             </button>
-            <button className="icon-btn" onClick={() => send('reset')}>Reiniciar</button>
+            <button className="icon-btn" onClick={() => sendCmd({ t: 'cmd', a: 'reset' })}>
+              Reiniciar
+            </button>
           </div>
         )}
 

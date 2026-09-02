@@ -137,12 +137,11 @@ function Editor() {
   const sendState = () => {
     const c = connRef.current
     if (!c || !c.open) return
-    const now = Date.now()
-    const payload = { t: 'state', mode: timerMode, running: timerRunning }
-    if (timerMode === 'down') {
-      payload.down = { endAt: timerRunning ? endRef.current : now + timerValue * 1000 }
-    } else if (timerMode === 'up') {
-      payload.up = { startAt: timerRunning ? startRef.current : now - timerValue * 1000 }
+    const payload = { t: 'state', mode: timerMode, running: timerRunning, value: timerValue, preset }
+    if (timerMode === 'down' && timerRunning) {
+      payload.down = { endAt: endRef.current }
+    } else if (timerMode === 'up' && timerRunning) {
+      payload.up = { startAt: startRef.current }
     }
     c.send(payload)
   }
@@ -172,6 +171,8 @@ function Editor() {
         if (!d || d.t !== 'cmd') return
         if (d.a === 'toggle') cmdRef.current.toggle()
         if (d.a === 'reset') cmdRef.current.reset()
+        if (d.a === 'mode') cmdRef.current.mode(d.mode)
+        if (d.a === 'preset') cmdRef.current.preset(d.seconds)
       })
       c.on('close', () => {
         connRef.current = null
@@ -304,7 +305,12 @@ function Editor() {
     }
   }
 
-  cmdRef.current = { toggle: remoteToggle, reset: remoteReset }
+  cmdRef.current = {
+    toggle: remoteToggle,
+    reset: remoteReset,
+    mode: switchTimerMode,
+    preset: setPresetFrom,
+  }
 
   return (
     <div className="app">
