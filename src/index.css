@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=Caveat:wght@500;600;700&display=swap');
+
+:root {
+  --bg: #0b0e1a;
+  --bg-soft: #111528;
+  --surface: #151a30;
+  --border: #232a47;
+  --text: #f2f4ff;
+  --text-muted: #9aa3c7;
+  --primary: #7c5cff;
+  --primary-2: #00d4ff;
+  --accent: #ff5c8a;
+  --gradient: linear-gradient(135deg, #7c5cff 0%, #00d4ff 100%);
+  --radius: 16px;
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: 'Sora', 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--primary);
+  color: #fff;
+}
