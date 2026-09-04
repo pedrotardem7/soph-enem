@@ -197,9 +197,8 @@ function Editor() {
 
   const goToSheet = () => {
     setQrOpen(false)
-    const el = document.querySelector('.sheet')
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    areaRef.current?.focus()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    areaRef.current?.focus({ preventScroll: true })
   }
 
   useEffect(() => {
