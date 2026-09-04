@@ -15,6 +15,20 @@
   --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
 }
 
+[data-theme="rosa"] {
+  --bg: #171019;
+  --bg-soft: #1e1522;
+  --surface: #251b2d;
+  --border: #3d2c46;
+  --text: #fdf2f6;
+  --text-muted: #c9a9b8;
+  --primary: #ff8fab;
+  --primary-2: #ffc2d4;
+  --accent: #fb6f92;
+  --gradient: linear-gradient(135deg, #ff8fab 0%, #ffc2d4 100%);
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+}
+
 * {
   margin: 0;
   padding: 0;

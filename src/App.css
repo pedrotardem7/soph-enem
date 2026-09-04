@@ -24,6 +24,14 @@
   pointer-events: none;
 }
 
+[data-theme="rosa"] .background {
+  background:
+    radial-gradient(40% 40% at 15% 10%, rgba(255, 143, 171, 0.28) 0%, transparent 60%),
+    radial-gradient(45% 45% at 85% 20%, rgba(255, 194, 212, 0.2) 0%, transparent 60%),
+    radial-gradient(50% 50% at 50% 100%, rgba(251, 111, 146, 0.14) 0%, transparent 60%),
+    var(--bg);
+}
+
 .blob {
   position: absolute;
   border-radius: 50%;
@@ -84,7 +92,7 @@
   font-family: 'Sora', sans-serif;
   font-weight: 800;
   font-size: 1.25rem;
-  background: linear-gradient(120deg, #7c5cff 0%, #00d4ff 50%, #7c5cff 100%);
+  background: linear-gradient(120deg, var(--primary) 0%, var(--primary-2) 50%, var(--primary) 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -176,16 +184,19 @@
   transform-origin: top right;
 }
 
-.timer-modes {
+.segmented.timer-modes {
   display: flex;
-  flex-wrap: nowrap;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 2px;
 }
 
 .timer-modes button {
-  flex: 1 1 auto;
   min-width: 0;
-  padding: 0.3rem 0.35rem;
-  font-size: 0.72rem;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.78rem;
+  text-align: center;
 }
 
 .timer-time {
@@ -292,6 +303,72 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+}
+
+.menu-wrap {
+  position: relative;
+}
+
+.menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: 230px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.5rem;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  animation: popIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: top right;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.menu-item:hover {
+  background: rgba(124, 92, 255, 0.14);
+}
+
+.menu-item .dot {
+  margin-left: auto;
+}
+
+.menu-item.primary {
+  background: var(--gradient);
+  color: #fff;
+  font-weight: 700;
+  justify-content: center;
+  margin-top: 0.2rem;
+}
+
+.menu-item.primary:hover {
+  background: var(--gradient);
+  filter: brightness(1.1);
+}
+
+.menu-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 0.25rem 0.5rem;
 }
 
 .dot {
@@ -425,12 +502,20 @@
   color: var(--text);
 }
 
+.background {
+  transition: filter 0.4s ease;
+}
+
 .app.focus-mode .toolbar,
 .app.focus-mode .footer,
 .app.focus-mode .warning,
 .app.focus-mode .blobs,
 .app.focus-mode .overlay {
   display: none;
+}
+
+.app.focus-mode .background {
+  filter: brightness(0.5) saturate(0.75);
 }
 
 .app.focus-mode .main {
@@ -511,13 +596,6 @@
   text-align: center;
 }
 
-.remote-label {
-  color: var(--text-muted);
-  font-size: 1.05rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
 .remote-time {
   font-family: 'Sora', sans-serif;
   font-weight: 800;
@@ -555,9 +633,29 @@
   justify-content: center;
 }
 
+.remote-off-hint {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.remote-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  width: min(340px, 100%);
+}
+
+.remote-modes {
+  width: min(340px, 100%);
+}
+
 .remote-modes button {
-  font-size: 0.82rem;
-  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+  padding: 0.5rem;
 }
 
 .remote-presets .chip {

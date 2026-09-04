@@ -6,6 +6,7 @@ import './App.css'
 
 const TOTAL_LINES = 30
 const STORAGE_KEY = 'soph-enem-redacao'
+const THEME_KEY = 'soph-enem-theme'
 const PRESETS = [30, 60, 80, 120]
 
 const NUMBERS = Array.from({ length: TOTAL_LINES }, (_, i) => i + 1)
@@ -57,6 +58,13 @@ function Editor() {
   const [visualLines, setVisualLines] = useState(0)
   const [copied, setCopied] = useState(false)
   const [focusMode, setFocusMode] = useState(false)
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem(THEME_KEY) ?? 'padrao'
+    } catch {
+      return 'padrao'
+    }
+  })
   const areaRef = useRef(null)
   const measureRef = useRef(null)
 
@@ -66,10 +74,12 @@ function Editor() {
   const [preset, setPreset] = useState(4800)
   const [customMin, setCustomMin] = useState(80)
   const [timerOpen, setTimerOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [timedOut, setTimedOut] = useState(false)
   const startRef = useRef(0)
   const endRef = useRef(0)
   const timerWrapRef = useRef(null)
+  const menuWrapRef = useRef(null)
 
   const [peerId] = useState(() => 'enem-' + Math.random().toString(36).slice(2, 10))
   const [qrOpen, setQrOpen] = useState(false)
@@ -100,6 +110,24 @@ function Editor() {
   }, [timerOpen])
 
   useEffect(() => {
+    if (!menuOpen) return
+    const handler = (e) => {
+      if (menuWrapRef.current && !menuWrapRef.current.contains(e.target)) {
+        setMenuOpen(false)
+      }
+    }
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('pointerdown', handler)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', handler)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
+
+  useEffect(() => {
     const t = setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, essay)
@@ -107,6 +135,17 @@ function Editor() {
     }, 300)
     return () => clearTimeout(t)
   }, [essay])
+
+  useEffect(() => {
+    if (theme === 'rosa') {
+      document.documentElement.dataset.theme = 'rosa'
+    } else {
+      delete document.documentElement.dataset.theme
+    }
+    try {
+      localStorage.setItem(THEME_KEY, theme)
+    } catch {}
+  }, [theme])
 
   useEffect(() => {
     const el = measureRef.current
@@ -139,7 +178,7 @@ function Editor() {
   const sendState = () => {
     const c = connRef.current
     if (!c || !c.open) return
-    const payload = { t: 'state', mode: timerMode, running: timerRunning, value: timerValue, preset }
+    const payload = { t: 'state', mode: timerMode, running: timerRunning, value: timerValue, preset, focus: focusMode, cursive, fs, theme }
     if (timerMode === 'down' && timerRunning) {
       payload.down = { endAt: endRef.current }
     } else if (timerMode === 'up' && timerRunning) {
@@ -175,6 +214,9 @@ function Editor() {
         if (d.a === 'reset') cmdRef.current.reset()
         if (d.a === 'mode') cmdRef.current.mode(d.mode)
         if (d.a === 'preset') cmdRef.current.preset(d.seconds)
+        if (d.a === 'focus') cmdRef.current.focus(!!d.on)
+        if (d.a === 'font') cmdRef.current.font(!!d.cursive)
+        if (d.a === 'fontsize') cmdRef.current.fontsize(Number(d.fs))
       })
       c.on('close', () => {
         connRef.current = null
@@ -220,7 +262,7 @@ function Editor() {
 
   useEffect(() => {
     sendStateRef.current()
-  }, [timerMode, timerRunning, timerValue, phoneConnected])
+  }, [timerMode, timerRunning, timerValue, phoneConnected, focusMode, cursive, fs, theme])
 
   const words = essay.trim() ? essay.trim().split(/\s+/).length : 0
   const chars = essay.length
@@ -244,9 +286,20 @@ function Editor() {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(essay)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    } catch {}
+    } catch {
+      const ta = document.createElement('textarea')
+      ta.value = essay
+      ta.style.position = 'fixed'
+      ta.style.opacity = '0'
+      document.body.appendChild(ta)
+      ta.select()
+      try {
+        document.execCommand('copy')
+      } catch {}
+      ta.remove()
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
   }
 
   const handlePrint = () => window.print()
@@ -318,6 +371,9 @@ function Editor() {
     reset: remoteReset,
     mode: switchTimerMode,
     preset: setPresetFrom,
+    focus: setFocusMode,
+    font: setCursive,
+    fontsize: (v) => setFs(Math.max(12, Math.min(28, Number.isFinite(v) ? v : 18))),
   }
 
   useEffect(() => {
@@ -449,15 +505,53 @@ function Editor() {
             <span className="fs-val">{fs}</span>
             <button onClick={() => setFs((v) => Math.min(28, v + 1))}>A+</button>
           </div>
-          <button className="icon-btn" onClick={() => setFocusMode(true)} title="Esconder tudo e mostrar só a folha (Esc para sair)">Foco</button>
-          <button className="icon-btn" onClick={handleClear}>Limpar</button>
-          <button className="icon-btn" onClick={handleCopy}>
-            {copied ? 'Copiado!' : 'Copiar'}
-          </button>
-          <button className="icon-btn qr-btn" onClick={openQr}>
-            QR <span className={`dot ${phoneConnected ? 'on' : ''}`} />
-          </button>
-          <button className="btn btn-primary" onClick={handlePrint}>Imprimir / PDF</button>
+          <div className="menu-wrap" ref={menuWrapRef}>
+            <button className="icon-btn menu-btn" onClick={() => setMenuOpen((o) => !o)} title="Ações">
+              Menu
+            </button>
+            {menuOpen && (
+              <div className="menu-panel">
+                <button
+                  className="menu-item"
+                  onClick={() => { setMenuOpen(false); setFocusMode(true); }}
+                >
+                  Modo foco
+                </button>
+                <button
+                  className="menu-item"
+                  onClick={() => { setMenuOpen(false); handleClear(); }}
+                >
+                  Limpar texto
+                </button>
+                <button
+                  className="menu-item"
+                  onClick={() => handleCopy()}
+                >
+                  {copied ? 'Copiado!' : 'Copiar texto'}
+                </button>
+                <button
+                  className="menu-item"
+                  onClick={() => { setMenuOpen(false); openQr(); }}
+                >
+                  Cronômetro no celular
+                  <span className={`dot ${phoneConnected ? 'on' : ''}`} />
+                </button>
+                <button
+                  className="menu-item"
+                  onClick={() => setTheme((t) => (t === 'rosa' ? 'padrao' : 'rosa'))}
+                >
+                  {theme === 'rosa' ? '✓ Tema rosa bebê' : 'Tema rosa bebê'}
+                </button>
+                <div className="menu-sep" />
+                <button
+                  className="menu-item primary"
+                  onClick={() => { setMenuOpen(false); handlePrint(); }}
+                >
+                  Imprimir / PDF
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

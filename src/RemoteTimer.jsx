@@ -52,6 +52,17 @@ function RemoteTimer({ peerId }) {
     return () => clearInterval(id)
   }, [])
 
+  useEffect(() => {
+    if (state?.theme === 'rosa') {
+      document.documentElement.dataset.theme = 'rosa'
+    } else {
+      delete document.documentElement.dataset.theme
+    }
+    return () => {
+      delete document.documentElement.dataset.theme
+    }
+  }, [state?.theme])
+
   const sendCmd = (obj) => {
     const c = connRef.current
     if (c && c.open) c.send(obj)
@@ -68,8 +79,6 @@ function RemoteTimer({ peerId }) {
     }
   }
 
-  const label =
-    state?.mode === 'down' ? 'Temporizador' : state?.mode === 'up' ? 'Cronômetro' : 'Desligado'
   const cls =
     state?.mode === 'down' && value === 0
       ? 'done'
@@ -119,31 +128,68 @@ function RemoteTimer({ peerId }) {
           </button>
         </div>
 
-        <p className="remote-label">{label}</p>
-        <div className={`remote-time ${cls}`}>{formatTime(value)}</div>
+        {state && state.mode !== 'off' ? (
+          <>
+            <div className={`remote-time ${cls}`}>{formatTime(value)}</div>
 
-        {state?.mode === 'down' && (
-          <div className="timer-presets remote-presets">
-            {PRESETS.map((p) => (
-              <button
-                key={p}
-                className={`chip ${state?.preset === p * 60 ? 'active' : ''}`}
-                onClick={() => sendCmd({ t: 'cmd', a: 'preset', seconds: p * 60 })}
-              >
-                {p} min
+            {state.mode === 'down' && (
+              <div className="timer-presets remote-presets">
+                {PRESETS.map((p) => (
+                  <button
+                    key={p}
+                    className={`chip ${state?.preset === p * 60 ? 'active' : ''}`}
+                    onClick={() => sendCmd({ t: 'cmd', a: 'preset', seconds: p * 60 })}
+                  >
+                    {p} min
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="remote-actions">
+              <button className="btn btn-primary" onClick={() => sendCmd({ t: 'cmd', a: 'toggle' })}>
+                {state.running ? 'Pausar' : 'Iniciar'}
               </button>
-            ))}
-          </div>
+              <button className="icon-btn" onClick={() => sendCmd({ t: 'cmd', a: 'reset' })}>
+                Reiniciar
+              </button>
+            </div>
+          </>
+        ) : (
+          <p className="remote-off-hint">Escolha um modo para começar.</p>
         )}
 
         {state && (
-          <div className="remote-actions">
-            <button className="btn btn-primary" onClick={() => sendCmd({ t: 'cmd', a: 'toggle' })}>
-              {state.running ? 'Pausar' : 'Iniciar'}
+          <div className="remote-display">
+            <button
+              className="icon-btn"
+              onClick={() => sendCmd({ t: 'cmd', a: 'focus', on: !state.focus })}
+            >
+              {state.focus ? 'Sair do foco' : 'Modo foco'}
             </button>
-            <button className="icon-btn" onClick={() => sendCmd({ t: 'cmd', a: 'reset' })}>
-              Reiniciar
-            </button>
+            <div className="segmented">
+              <button
+                className={!state.cursive ? 'active' : ''}
+                onClick={() => sendCmd({ t: 'cmd', a: 'font', cursive: false })}
+              >
+                Digitação
+              </button>
+              <button
+                className={state.cursive ? 'active' : ''}
+                onClick={() => sendCmd({ t: 'cmd', a: 'font', cursive: true })}
+              >
+                Cursiva
+              </button>
+            </div>
+            <div className="segmented">
+              <button onClick={() => sendCmd({ t: 'cmd', a: 'fontsize', fs: (state.fs ?? 18) - 1 })}>
+                A−
+              </button>
+              <span className="fs-val">{state.fs ?? 18}</span>
+              <button onClick={() => sendCmd({ t: 'cmd', a: 'fontsize', fs: (state.fs ?? 18) + 1 })}>
+                A+
+              </button>
+            </div>
           </div>
         )}
 
