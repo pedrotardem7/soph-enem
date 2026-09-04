@@ -425,6 +425,45 @@
   color: var(--text);
 }
 
+.app.focus-mode .toolbar,
+.app.focus-mode .footer,
+.app.focus-mode .warning,
+.app.focus-mode .blobs,
+.app.focus-mode .overlay {
+  display: none;
+}
+
+.app.focus-mode .main {
+  padding: 2.5rem 1rem 3.5rem;
+}
+
+.focus-exit {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 55;
+  border: 1px solid var(--border);
+  background: rgba(17, 21, 40, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-muted);
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+  animation: fadeDown 0.4s ease both;
+}
+
+.focus-exit:hover {
+  opacity: 1;
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -851,7 +890,8 @@
   .overlay,
   .remote,
   .timer-wrap,
-  .footer {
+  .footer,
+  .focus-exit {
     display: none !important;
   }
 

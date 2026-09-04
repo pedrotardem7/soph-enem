@@ -56,6 +56,7 @@ function Editor() {
   const [fs, setFs] = useState(18)
   const [visualLines, setVisualLines] = useState(0)
   const [copied, setCopied] = useState(false)
+  const [focusMode, setFocusMode] = useState(false)
   const areaRef = useRef(null)
   const measureRef = useRef(null)
 
@@ -319,8 +320,17 @@ function Editor() {
     preset: setPresetFrom,
   }
 
+  useEffect(() => {
+    if (!focusMode) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') setFocusMode(false)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [focusMode])
+
   return (
-    <div className="app">
+    <div className={`app ${focusMode ? 'focus-mode' : ''}`}>
       <div className="background" />
       <div className="blobs">
         <div className="blob blob-1" />
@@ -439,6 +449,7 @@ function Editor() {
             <span className="fs-val">{fs}</span>
             <button onClick={() => setFs((v) => Math.min(28, v + 1))}>A+</button>
           </div>
+          <button className="icon-btn" onClick={() => setFocusMode(true)} title="Esconder tudo e mostrar só a folha (Esc para sair)">Foco</button>
           <button className="icon-btn" onClick={handleClear}>Limpar</button>
           <button className="icon-btn" onClick={handleCopy}>
             {copied ? 'Copiado!' : 'Copiar'}
@@ -517,6 +528,12 @@ function Editor() {
           @pedrotardem
         </a>
       </footer>
+
+      {focusMode && (
+        <button className="focus-exit" onClick={() => setFocusMode(false)} title="Sair do modo foco (Esc)">
+          Sair do foco
+        </button>
+      )}
 
       {qrOpen && (
         <div className="overlay">
