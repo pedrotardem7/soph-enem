@@ -152,10 +152,6 @@ function RemoteTimer({ peerId }) {
             Tentar novamente
           </button>
         )}
-
-        <a className="remote-back" href={window.location.origin + window.location.pathname}>
-          Abrir a folha de redação
-        </a>
       </main>
     </div>
   )
